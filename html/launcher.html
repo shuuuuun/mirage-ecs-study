@@ -1,0 +1,34 @@
+{{ template "header" }}
+
+<h1>Launch Container</h1>
+
+<div class="col-md-12">
+<form id="launcher" method="POST" action="/launch">
+  <label for="subdomain" class="col-md-2 text-right">subdomain </label>
+  <input type="text" name="subdomain" value="" id="subdomain"
+         class="col-md-5" placeholder="mybranch">
+  <p class="col-md-5">*Required</p>
+
+{{ range $param := .Parameters }}
+
+  <label for="{{ $param.Name }}" class="col-md-2 text-right">{{ $param.Name }} </label>
+  <input type="text" name="{{ $param.Name }}" value="" id="{{ $param.Name }}"
+         class="col-md-5" placeholder="your {{ $param.Name }}" />
+  <p class="col-md-5">{{ if $param.Required }}*Required {{ else}} (optional) {{ end }}</p>
+
+{{ end }}
+
+  <label for="taskdef" class="col-md-2 text-right">Task Definition</label>
+  <input type="text" name="taskdef" value="{{ .DefaultTaskDefinition }}" id="taskdef"
+         class="col-md-5" placeholder="arn:aws:ecs:ap-northeast-1:123456789012:task-definition/myapp">
+  <p class="col-md-5">*Required</p>
+
+  <p class="col-md-7"></p>
+  <p class="col-md-5 text-left">
+    <input type="submit" class="btn btn-primary">
+  </p>
+</form>
+</div>
+
+{{ template "footer" }}
+
