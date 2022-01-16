@@ -39,12 +39,6 @@ copilot/ls:
 	copilot env ls
 	copilot svc ls
 
-# $ copilot init
-#   Workload type: Load Balanced Web Service
-#   Service name: mirage
-#   Dockerfile: ./Dockerfile
-#   parse EXPOSE: no EXPOSE statements in Dockerfile ./Dockerfile
-#   Port: 80
 copilot/init: copilot/init-app copilot/init-env copilot/init-svc
 copilot/init-app:
 	copilot app init ${COPILOT_APP_NAME} --domain ${BASE_DOMAIN}
@@ -58,19 +52,21 @@ copilot/deploy:
 copilot/deploy-force:
 	copilot svc deploy --name ${COPILOT_SVC_NAME} --env ${COPILOT_ENV_NAME} --force
 
-copilot/delete:
+copilot/delete: copilot/delete-svc copilot/delete-env copilot/delete-app
+copilot/delete-app:
+	copilot app delete --name ${COPILOT_APP_NAME}
+copilot/delete-env:
+	copilot env delete --name ${COPILOT_ENV_NAME}
+copilot/delete-svc: detach-role-policy
 	copilot svc delete --name ${COPILOT_SVC_NAME}
-	# copilot env delete --name ${COPILOT_ENV_NAME}
-
-# Customize Resources by manually...
-# 1. Attach a policy: arn:aws:iam::aws:policy/AmazonECS_FullAccess to TaskRole (e.g. role/mirage-ecs-example-test-mirage-TaskRole-xxxxx).
-# 2. Remove a statement Deny iam:* in DenyIAMExceptTaggedRoles inline policy in TaskRole.
-# 3. Add Route53 record set *.test.mirage-ecs-example.test.example.com Alias to ALB (created by Copilot)
-# 4. ALBのリスナールールのホストの条件を削除して、どのホストでもECSにアクセスできるようにする
 
 # $ aws iam list-roles | jq -rc '.Roles[] | select(.RoleName | startswith("mirage-ecs-study-dev-mirage-TaskRole-"))'
-task_role_id:
-	aws iam list-roles | jq -rc '.Roles[] | select(.RoleName | startswith("${COPILOT_APP_NAME}-${COPILOT_ENV_NAME}-${COPILOT_SVC_NAME}-TaskRole-")).RoleId'
+task_role_name := $(shell aws iam list-roles | jq -rc '.Roles[] | select(.RoleName | startswith("${COPILOT_APP_NAME}-${COPILOT_ENV_NAME}-${COPILOT_SVC_NAME}-TaskRole-")).RoleName')
+attach-role-policy:
+	aws iam attach-role-policy --role-name ${task_role_name} --policy-arn arn:aws:iam::aws:policy/AmazonECS_FullAccess
+detach-role-policy:
+	test -n "${task_role_name}" && \
+	aws iam detach-role-policy --role-name ${task_role_name} --policy-arn arn:aws:iam::aws:policy/AmazonECS_FullAccess || exit 0
 
 # aws route53 list-resource-record-sets --hosted-zone-id /hostedzone/ZXXXXXXXXXX | jq '.ResourceRecordSets[]'
 list-resource-record-sets:
