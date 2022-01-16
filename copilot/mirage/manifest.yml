@@ -37,6 +37,7 @@ variables: # Pass environment variables as key value pairs.
   SECURITY_GROUP: ${SECURITY_GROUP}
   DEFAULT_TASKDEF: ${DEFAULT_TASKDEF}
   DOMAIN: ${DOMAIN}
+  HOSTED_ZONE_ID: ${HOSTED_ZONE_ID}
 
 #secrets:                      # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
 #  GITHUB_TOKEN: GITHUB_TOKEN  # The key is the name of the environment variable, the value is the name of the SSM parameter.

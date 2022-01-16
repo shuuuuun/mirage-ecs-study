@@ -46,3 +46,6 @@ ecs:
         - '{{ must_env "SECURITY_GROUP" }}'
       assign_public_ip: ENABLED
   default_task_definition: '{{ must_env "DEFAULT_TASKDEF" }}'
+
+link:
+  hosted_zone_id: '{{ must_env "HOSTED_ZONE_ID" }}'
