@@ -8,7 +8,7 @@ with copilot.
 
 ### Versions
 * mirage
-  * `v0.6.3`
+  * `v0.6.6`
 * copilot
   * `version: v1.13.0, built for darwin`
 
